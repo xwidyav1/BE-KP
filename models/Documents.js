@@ -1,10 +1,26 @@
-const mongoose = require('mongoose');
+const db = require('../config/db');
 
-const documentSchema = new mongoose.Schema({
-  title: String,
-  description: String,
-  fileUrl: String,  // Link file dokumen yang disimpan di server
-  date: { type: Date, default: Date.now }
-});
+const Document = {
+    create: (data, callback) => {
+        const query = 'INSERT INTO documents (name, file_path, description) VALUES (?, ?, ?)';
+        db.query(query, [data.name, data.file_path, data.description], callback);
+    },
+    getAll: (callback) => {
+        const query = 'SELECT * FROM documents ORDER BY uploaded_at DESC';
+        db.query(query, callback);
+    },
+    getById: (id, callback) => {
+        const query = 'SELECT * FROM documents WHERE id = ?';
+        db.query(query, [id], callback);
+    },
+    update: (id, data, callback) => {
+        const query = 'UPDATE documents SET name = ?, file_path = ?, description = ? WHERE id = ?';
+        db.query(query, [data.name, data.file_path, data.description, id], callback);
+    },
+    delete: (id, callback) => {
+        const query = 'DELETE FROM documents WHERE id = ?';
+        db.query(query, [id], callback);
+    }
+};
 
-module.exports = mongoose.model('Document', documentSchema);
+module.exports = Document;

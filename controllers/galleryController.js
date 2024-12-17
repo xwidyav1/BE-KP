@@ -1,45 +1,80 @@
-const Gallery = require('../models/Gallery');
+const Gallery = require('../models/gallery');
 
-exports.getGallery = async (req, res) => {
-  try {
-    const gallery = await Gallery.find();
-    res.json(gallery);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+
+exports.create = (req, res) => {
+  const { title, file_path, file_type, description } = req.body;
+  const image = req.file ? req.file.path : '';
+  if (!title || !file_path || !file_type) {
+    return res.status(400).json({ message: 'Title, file_path, and file_type are required' });
   }
+
+  Gallery.create({ title, file_path, file_type, description }, (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ message: 'Error creating media in gallery' });
+    }
+    res.status(201).json({ message: 'Media created successfully', mediaId: result.insertId });
+  });
 };
 
-exports.createGalleryItem = async (req, res) => {
-  const { title, imageUrl, description } = req.body;
-  const newGalleryItem = new Gallery({ title, imageUrl, description });
 
-  try {
-    const savedGalleryItem = await newGalleryItem.save();
-    res.status(201).json(savedGalleryItem);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
+exports.getAll = (req, res) => {
+  Gallery.getAll((err, results) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ message: 'Error fetching gallery media' });
+    }
+    res.status(200).json(results);
+  });
 };
 
-exports.updateGalleryItem = async (req, res) => {
-  const { title, imageUrl, description } = req.body;
-  try {
-    const updatedGalleryItem = await Gallery.findByIdAndUpdate(
-      req.params.id,
-      { title, imageUrl, description },
-      { new: true }
-    );
-    res.json(updatedGalleryItem);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
+
+exports.getById = (req, res) => {
+  const { id } = req.params;
+
+  Gallery.getById(id, (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ message: 'Error fetching media by ID' });
+    }
+
+    if (!result) {
+      return res.status(404).json({ message: 'Media not found' });
+    }
+
+    res.status(200).json(result);
+  });
 };
 
-exports.deleteGalleryItem = async (req, res) => {
-  try {
-    const deletedGalleryItem = await Gallery.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Gallery item deleted', galleryItem: deletedGalleryItem });
-  } catch (err) {
-    res.status(400).json({ message: err.message });
+
+exports.update = (req, res) => {
+  const { id } = req.params;
+  const { title, file_path, file_type, description } = req.body;
+
+  if (!title || !file_path || !file_type) {
+    return res.status(400).json({ message: 'Title, file_path, and file_type are required' });
   }
+
+  Gallery.update(id, { title, file_path, file_type, description }, (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ message: 'Error updating media in gallery' });
+    }
+
+    res.status(200).json({ message: 'Media updated successfully' });
+  });
+};
+
+
+exports.delete = (req, res) => {
+  const { id } = req.params;
+
+  Gallery.delete(id, (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ message: 'Error deleting media from gallery' });
+    }
+
+    res.status(200).json({ message: 'Media deleted successfully' });
+  });
 };

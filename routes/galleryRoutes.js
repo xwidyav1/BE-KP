@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const galleryController = require('../controllers/galleryController');
-const authMiddleware = require('../middleware/authMiddleware');
 
-router.get('/', galleryController.getGallery);
-router.post('/', authMiddleware, galleryController.createGalleryItem);
-router.put('/:id', authMiddleware, galleryController.updateGalleryItem);
-router.delete('/:id', authMiddleware, galleryController.deleteGalleryItem);
+// Routes untuk Galeri
+//router.post('/create', galleryController.create);  // Menambahkan media baru
+//router.get('/', galleryController.getAll);         // Mendapatkan semua media
+//router.get('/:id', galleryController.getById);     // Mendapatkan media berdasarkan ID
+//router.put('/:id', galleryController.update);      // Memperbarui media berdasarkan ID
+//router.delete('/:id', galleryController.delete);   // Menghapus media berdasarkan ID
 
 module.exports = router;
