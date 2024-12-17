@@ -1,10 +1,11 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const axios = require('axios');
-const User = require('../models/User');
+const User = require('../models/admin');
+require('dotenv').config();
 
-// Secret key dari Google reCAPTCHA
-const RECAPTCHA_SECRET_KEY = RECAPTCHA_SECRET_KEY;
+// Pastikan RECAPTCHA_SECRET_KEY diambil dari process.env
+const RECAPTCHA_SECRET_KEY = process.env.RECAPTCHA_SECRET_KEY;
 
 exports.login = async (req, res) => {
   const { username, password, 'g-recaptcha-response': captchaResponse } = req.body;

@@ -1,4 +1,4 @@
-const Document = require('../models/Document');
+const Document = require('../models/Documents');
 
 exports.getDocuments = async (req, res) => {
   try {

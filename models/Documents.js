@@ -7,4 +7,4 @@ const documentSchema = new mongoose.Schema({
   date: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('Document', articleSchema);
+module.exports = mongoose.model('Document', documentSchema);

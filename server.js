@@ -1,14 +1,16 @@
 const express = require('express');
 const connectDB = require('./config/db');
 const dotenv = require('dotenv');
-
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const path = require('path');
 dotenv.config();
 connectDB();
-const articleRoutes = require('./routes/articleRoutes');
+const articleRoutes = require('./routes/artikelRoutes');
 const galleryRoutes = require('./routes/galleryRoutes');
-const documentRoutes = require('./routes/documentRoutes');
+const documentRoutes = require('./routes/documentsRoutes');
 const adminRoutes = require('./routes/adminRoutes');
-
+const uploadRoutes = require('./routes/uploadRoutes')
 const app = express();
 app.use(express.json());
 // Middleware

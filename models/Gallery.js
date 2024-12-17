@@ -7,4 +7,4 @@ const gallerySchema = new mongoose.Schema({
   date: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('Gallery', articleSchema);
+module.exports = mongoose.model('Gallery', gallerySchema);
