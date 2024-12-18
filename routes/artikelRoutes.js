@@ -1,14 +1,17 @@
 const express = require('express');
-const router = express.Router();
+const multer = require('multer');
 const articleController = require('../controllers/artikelController');
 
-// Route untuk mendapatkan semua artikel
-//router.get('/', articleController.getArticles);
+const router = express.Router();
 
-// Route untuk menambahkan artikel
-//router.post('/', articleController.createArticle);
+// Setup multer for image upload
+const upload = multer({ dest: 'uploads/' });
 
-// Route untuk menghapus artikel
-//router.delete('/:id', articleController.deleteArticle);
+// Routes
+router.post('/articles', upload.single('image'), articleController.create);
+router.get('/articles', articleController.getAll);
+router.get('/articles/:id', articleController.getById);
+router.put('/articles/:id', upload.single('image'), articleController.update);
+router.delete('/articles/:id', articleController.delete);
 
 module.exports = router;

@@ -1,49 +1,48 @@
 const Document = require('../models/Documents');
 
 // Menambahkan dokumen baru
-exports.create = (req, res) => {
-  const { name, file_path, description } = req.body;
-  const image = req.file ? req.file.path : '';
-  if (!name || !file_path) {
-    return res.status(400).json({ message: 'Name and file_path are required' });
-  }
+exports.create = async (req, res) => {
+    try {
+        const { name, file_path, description } = req.body;
 
-  Document.create({ name, file_path, description }, (err, result) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ message: 'Error creating document' });
+        if (!name || !file_path) {
+            return res.status(400).json({ message: 'Name and file_path are required' });
+        }
+
+        const result = await Document.create({ name, file_path, description });
+        res.status(201).json({ message: 'Document created successfully', documentId: result.insertId });
+    } catch (error) {
+        console.error('Error creating document:', error.message);
+        res.status(500).json({ message: 'Error creating document', error: error.message });
     }
-    res.status(201).json({ message: 'Document created successfully', documentId: result.insertId });
-  });
 };
 
 // Mendapatkan semua dokumen
-exports.getAll = (req, res) => {
-  Document.getAll((err, results) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ message: 'Error fetching documents' });
+exports.getAll = async (req, res) => {
+    try {
+        const results = await Document.getAll();
+        res.status(200).json(results);
+    } catch (error) {
+        console.error('Error fetching documents:', error.message);
+        res.status(500).json({ message: 'Error fetching documents', error: error.message });
     }
-    res.status(200).json(results);
-  });
 };
 
 // Mendapatkan dokumen berdasarkan ID
-exports.getById = (req, res) => {
-  const { id } = req.params;
+exports.getById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const result = await Document.getById(id);
 
-  Document.getById(id, (err, result) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ message: 'Error fetching document by ID' });
+        if (!result) {
+            return res.status(404).json({ message: 'Document not found' });
+        }
+
+        res.status(200).json(result);
+    } catch (error) {
+        console.error(`Error fetching document with ID ${id}:`, error.message);
+        res.status(500).json({ message: 'Error fetching document by ID', error: error.message });
     }
-
-    if (!result) {
-      return res.status(404).json({ message: 'Document not found' });
-    }
-
-    res.status(200).json(result);
-  });
 };
 
 // Memperbarui dokumen
@@ -57,7 +56,7 @@ exports.update = (req, res) => {
 
   Document.update(id, { name, file_path, description }, (err, result) => {
     if (err) {
-      console.error(err);
+      console.error(`Error updating document with ID ${id}:`, err.message);  // Menambahkan id pada log
       return res.status(500).json({ message: 'Error updating document' });
     }
 
@@ -65,16 +64,16 @@ exports.update = (req, res) => {
   });
 };
 
+
 // Menghapus dokumen
-exports.delete = (req, res) => {
-  const { id } = req.params;
+exports.delete = async (req, res) => {
+    try {
+        const { id } = req.params;
 
-  Document.delete(id, (err, result) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ message: 'Error deleting document' });
+        await Document.delete(id);
+        res.status(200).json({ message: 'Document deleted successfully' });
+    } catch (error) {
+        console.error(`Error deleting document with ID ${id}:`, error.message);
+        res.status(500).json({ message: 'Error deleting document', error: error.message });
     }
-
-    res.status(200).json({ message: 'Document deleted successfully' });
-  });
 };

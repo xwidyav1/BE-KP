@@ -40,19 +40,22 @@ db.connect((err) => {
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Import Routes
-const uploadRoutes = require('./routes/uploadRoutes');
+//const uploadRoutes = require('./routes/uploadRoutes');
 const articleRoutes = require('./routes/artikelRoutes');
-const galleryRoutes = require('./routes/galleryRoutes');
+//const galleryRoutes = require('./routes/galleryRoutes');
 const documentRoutes = require('./routes/documentsRoutes');
 
 // Gunakan Routes
-app.use('/api', uploadRoutes); // Endpoint untuk upload file
-app.use('/api/articles', articleRoutes); // Artikel CRUD
-app.use('/api/gallery', galleryRoutes); // Galeri CRUD
-app.use('/api/documents', documentRoutes); // Dokumen CRUD
+//app.use('/api', uploadRoutes); // Endpoint untuk upload file
+app.use('/api', articleRoutes);
+//app.use('/api/gallery', galleryRoutes); // Galeri CRUD
+app.use('/api/documents', documentRoutes);
+app.get('/', (req, res) => {
+  res.send('Welcome to the Article Management API!');
+});
 
 // Port dan server
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
