@@ -1,12 +1,24 @@
 const express = require('express');
 const router = express.Router();
 const galleryController = require('../controllers/galleryController');
+const uploadRoutes = require('./uploadRoutes');
 
-// Routes untuk Galeri
-//router.post('/create', galleryController.create);  // Menambahkan media baru
-//router.get('/', galleryController.getAll);         // Mendapatkan semua media
-//router.get('/:id', galleryController.getById);     // Mendapatkan media berdasarkan ID
-//router.put('/:id', galleryController.update);      // Memperbarui media berdasarkan ID
-//router.delete('/:id', galleryController.delete);   // Menghapus media berdasarkan ID
+// Menambahkan media baru ke gallery
+router.post('/gallery', galleryController.create);
+
+// Mendapatkan semua media dari gallery
+router.get('/gallery', galleryController.getAll);
+
+// Mendapatkan media berdasarkan ID
+router.get('/gallery/:id', galleryController.getById);
+
+// Memperbarui media di gallery berdasarkan ID
+router.put('/gallery/:id', galleryController.update);
+
+// Menghapus media dari gallery berdasarkan ID
+router.delete('/gallery/:id', galleryController.delete);
+
+// Rute unggahan file
+router.use(uploadRoutes);
 
 module.exports = router;
