@@ -5,6 +5,7 @@ const path = require('path');
 const dotenv = require('dotenv');
 const mysql = require('mysql2');
 const methodOverride = require('method-override'); // Untuk mendukung PUT dan DELETE
+const expressLayouts = require("express-ejs-layouts");
 require('dotenv').config();
 
 // Mengatur dotenv untuk konfigurasi environment
@@ -12,11 +13,11 @@ dotenv.config();
 
 // Inisialisasi express
 const app = express();
-
+app.use(expressLayouts);
 // Set EJS sebagai templating engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views')); // Pastikan folder views ada
-
+app.set('layout', 'layout');
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
@@ -56,7 +57,9 @@ const galleryRoutes = require('./routes/galleryRoutes');
 const documentRoutes = require('./routes/documentsRoutes');
 
 // Gunakan Routes
-app.use('/', articleRoutes); // Artikel route akan di-handle oleh artikelRoutes
+app.use('/artikel', articleRoutes); // Artikel route akan di-handle oleh artikelRoutes
+console.log("Artikel routes loaded");
+
 app.use('/gallery', galleryRoutes); // Gallery route
 app.use('/documents', documentRoutes); // Document route
 

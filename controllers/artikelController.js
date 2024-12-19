@@ -17,7 +17,11 @@ exports.create = async (req, res) => {
 exports.getAll = async (req, res) => {
     try {
         const results = await Article.getAll();
-        res.render('artikel/index', { articles: results });
+        res.render('artikel/index', {
+            layout: 'layout', // Pastikan layout disertakan
+            title: 'Daftar Artikel', // Judul halaman
+            articles: results, // Data artikel
+        });
     } catch (err) {
         console.error(err);
         res.status(500).send('Error fetching articles');
@@ -32,7 +36,11 @@ exports.getByIdForEdit = async (req, res) => {
         if (!result) {
             return res.status(404).send('Article not found');
         }
-        res.render('artikel/update', { article: result });
+        res.render('artikel/update', {
+            layout: 'layout',
+            title: 'Edit Artikel',
+            article: result,
+        });
     } catch (err) {
         console.error(err);
         res.status(500).send('Error fetching article');

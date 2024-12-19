@@ -8,11 +8,15 @@ const router = express.Router();
 const upload = multer({ dest: 'uploads/' });
 
 // Routes for articles
-router.get('/articles', articleController.getAll); // View all articles
-router.get('/articles/create', (req, res) => res.render('artikel/create')); // Form to create an article
-router.post('/articles', upload.single('image'), articleController.create); // Create article
-router.get('/articles/edit/:id', articleController.getByIdForEdit); // Form to edit an article
-router.post('/articles/:id?_method=PUT', upload.single('image'), articleController.update); // Update article
-router.post('/articles/:id?_method=DELETE', articleController.delete); // Delete article
+router.get('/', articleController.getAll); // View all articles
+router.get('/create', (req, res) => {
+    console.log("Route /artikel/create hit");
+    res.render('artikel/create');
+});
+
+router.post('/', upload.single('image'), articleController.create); // Create article
+router.get('/edit/:id', articleController.getByIdForEdit); // Form to edit an article
+router.post('/:id?_method=PUT', upload.single('image'), articleController.update); // Update article
+router.post('/:id?_method=DELETE', articleController.delete); // Delete article
 
 module.exports = router;
