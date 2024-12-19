@@ -7,7 +7,9 @@ const mysql = require('mysql2');
 const methodOverride = require('method-override'); // Untuk mendukung PUT dan DELETE
 const expressLayouts = require("express-ejs-layouts");
 require('dotenv').config();
-
+const session = require('express-session');
+const captcha = require('node-captcha');
+const adminRoutes = require('./routes/adminRoutes');
 // Mengatur dotenv untuk konfigurasi environment
 dotenv.config();
 
@@ -76,7 +78,20 @@ app.get('/artikel', (req, res) => {
   });
 });
 
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: true,
+}));
 
+app.get('/captcha', (req, res) => {
+  const captchaText = captcha({ length: 5, size: 60 });
+  req.session.captcha = captchaText.text;
+  res.set('Content-Type', 'image/svg+xml');
+  res.send(captchaText.data);
+});
+
+app.use('/admin', adminRoutes);
 // Port dan server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
