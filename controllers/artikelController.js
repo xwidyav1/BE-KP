@@ -1,59 +1,66 @@
 const Article = require('../models/Artikel');
 
+// Create a new article
 exports.create = async (req, res) => {
     try {
         const { title, content } = req.body;
         const image = req.file ? req.file.path : '';
-        const result = await Article.create({ title, content, image });
-        res.status(201).json({ message: 'Article created successfully', articleId: result.insertId });
+        await Article.create({ title, content, image });
+        res.redirect('/articles'); // Redirect to the list of articles after creation
     } catch (err) {
-        res.status(500).json({ message: 'Error creating article' });
+        console.error(err);
+        res.status(500).send('Error creating article');
     }
 };
 
+// Get all articles
 exports.getAll = async (req, res) => {
     try {
         const results = await Article.getAll();
-        if (results.length === 0) {
-            return res.status(200).json({ message: 'No articles found', data: [] });
-        }
-        res.status(200).json(results);
+        res.render('artikel/index', { articles: results });
     } catch (err) {
-        res.status(500).json({ message: 'Error fetching articles' });
+        console.error(err);
+        res.status(500).send('Error fetching articles');
     }
 };
 
-
-exports.getById = async (req, res) => {
+// Get article by ID for editing
+exports.getByIdForEdit = async (req, res) => {
     try {
         const { id } = req.params;
         const result = await Article.getById(id);
         if (!result) {
-            return res.status(404).json({ message: 'Article not found' });
+            return res.status(404).send('Article not found');
         }
-        res.status(200).json(result);
+        res.render('artikel/update', { article: result });
     } catch (err) {
-        res.status(500).json({ message: 'Error fetching article' });
+        console.error(err);
+        res.status(500).send('Error fetching article');
     }
 };
 
+// Update an article
 exports.update = async (req, res) => {
     try {
         const { id } = req.params;
-        const { title, content, image } = req.body;
+        const { title, content } = req.body;
+        const image = req.file ? req.file.path : undefined;
         await Article.update(id, { title, content, image });
-        res.status(200).json({ message: 'Article updated successfully' });
+        res.redirect('/articles'); // Redirect to the list of articles after update
     } catch (err) {
-        res.status(500).json({ message: 'Error updating article' });
+        console.error(err);
+        res.status(500).send('Error updating article');
     }
 };
 
+// Delete an article
 exports.delete = async (req, res) => {
     try {
         const { id } = req.params;
         await Article.delete(id);
-        res.status(200).json({ message: 'Article deleted successfully' });
+        res.redirect('/articles'); // Redirect to the list of articles after deletion
     } catch (err) {
-        res.status(500).json({ message: 'Error deleting article' });
+        console.error(err);
+        res.status(500).send('Error deleting article');
     }
 };

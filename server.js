@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const dotenv = require('dotenv');
 const mysql = require('mysql2');
-const multer = require('multer');
+const methodOverride = require('method-override'); // Untuk mendukung PUT dan DELETE
 require('dotenv').config();
 
 // Mengatur dotenv untuk konfigurasi environment
@@ -12,20 +12,20 @@ dotenv.config();
 
 // Inisialisasi express
 const app = express();
+
 // Set EJS sebagai templating engine
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));  // Pastikan folder views ada
-
-app.use(express.json());
+app.set('views', path.join(__dirname, 'views')); // Pastikan folder views ada
 
 // Middleware
 app.use(cors());
-app.use(bodyParser.json()); // Untuk menerima JSON di body
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); // Untuk URL-encoded body
+app.use(methodOverride('_method')); // Middleware untuk mendukung PUT dan DELETE
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ message: 'Internal server error' });
-})
+});
 
 // Menghubungkan ke MySQL
 const db = mysql.createConnection({
@@ -33,7 +33,7 @@ const db = mysql.createConnection({
   user: process.env.DB_USER,
   password: process.env.DB_PASS,
   database: process.env.DB_NAME,
-  port: process.env.DB_PORT
+  port: process.env.DB_PORT,
 });
 
 // Menghubungkan ke database
@@ -56,33 +56,23 @@ const galleryRoutes = require('./routes/galleryRoutes');
 const documentRoutes = require('./routes/documentsRoutes');
 
 // Gunakan Routes
-app.use('/api', articleRoutes);
-app.use('/api/gallery', galleryRoutes);
-app.use('/api/documents', documentRoutes);
+app.use('/', articleRoutes); // Artikel route akan di-handle oleh artikelRoutes
+app.use('/gallery', galleryRoutes); // Gallery route
+app.use('/documents', documentRoutes); // Document route
 
-// Rute untuk halaman AdminLTE
-app.get('/', (req, res) => {
-  res.render('artikel/index');  // Render halaman EJS dengan AdminLTE
-});
-
-// Rute untuk artikel
+// Halaman AdminLTE Default
 app.get('/artikel', (req, res) => {
   const query = 'SELECT * FROM artikel';
   db.query(query, (err, results) => {
-    if (err) throw err;
-    res.render('artikel/index', { data: results });  // Render halaman artikel
+    if (err) {
+      console.error(err);
+      return res.status(500).send('Error fetching articles');
+    }
+    // Pastikan variabel articles dikirim ke view
+    res.render('artikel/index', { articles: results });
   });
 });
 
-// Rute untuk halaman gallery
-app.get('/gallery', (req, res) => {
-  res.render('gallery/index');  // Render halaman gallery
-});
-
-// Rute untuk halaman dokumen
-app.get('/documents', (req, res) => {
-  res.render('documents/index');  // Render halaman dokumen
-});
 
 // Port dan server
 const PORT = process.env.PORT || 3000;
