@@ -8,7 +8,7 @@ const methodOverride = require('method-override'); // Untuk mendukung PUT dan DE
 const expressLayouts = require("express-ejs-layouts");
 require('dotenv').config();
 const session = require('express-session');
-const captcha = require('node-captcha');
+//const captcha = require('node-captcha');
 const adminRoutes = require('./routes/adminRoutes');
 // Mengatur dotenv untuk konfigurasi environment
 dotenv.config();
@@ -84,16 +84,16 @@ app.use(session({
   saveUninitialized: true,
 }));
 
-app.get('/captcha', (req, res) => {
-  const captchaText = captcha({ length: 5, size: 60 });
-  req.session.captcha = captchaText.text;
-  res.set('Content-Type', 'image/svg+xml');
-  res.send(captchaText.data);
-});
+// app.get('/captcha', (req, res) => {
+//   const captchaText = captcha({ length: 5, size: 60 });
+//   req.session.captcha = captchaText.text;
+//   res.set('Content-Type', 'image/svg+xml');
+//   res.send(captchaText.data);
+// });
 
 app.use('/admin', adminRoutes);
 // Port dan server
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

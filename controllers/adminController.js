@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const adminModel = require('../models/adminModel');
+const adminModel = require('../models/Admin');
 
 module.exports = {
   login: async (req, res) => {
