@@ -5,9 +5,10 @@ module.exports = {
   login: async (req, res) => {
     const { username, password, captchaInput } = req.body;
 
-    if (!req.session.captcha || req.session.captcha !== captchaInput) {
+    if (!req.session.captcha || req.session.captcha.toLowerCase() !== captchaInput.toLowerCase()) {
       return res.status(400).json({ message: 'CAPTCHA tidak valid' });
     }
+    
 
     try {
       const admin = await adminModel.getAdminByUsername(username);

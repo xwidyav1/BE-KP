@@ -8,8 +8,10 @@ const methodOverride = require('method-override'); // Untuk mendukung PUT dan DE
 const expressLayouts = require("express-ejs-layouts");
 require('dotenv').config();
 const session = require('express-session');
-//const captcha = require('node-captcha');
+const svgCaptcha = require('svg-captcha');
+const rateLimit = require('express-rate-limit');
 const adminRoutes = require('./routes/adminRoutes');
+
 // Mengatur dotenv untuk konfigurasi environment
 dotenv.config();
 
@@ -50,8 +52,7 @@ db.connect((err) => {
 
 // Menyediakan akses file statis di folder uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-// Menyediakan file statis AdminLTE
-app.use('/static', express.static(path.join(__dirname, 'AdminLTE')));
+
 
 // Import Routes
 const articleRoutes = require('./routes/artikelRoutes');
@@ -59,41 +60,43 @@ const galleryRoutes = require('./routes/galleryRoutes');
 const documentRoutes = require('./routes/documentsRoutes');
 
 // Gunakan Routes
-app.use('/artikel', articleRoutes); // Artikel route akan di-handle oleh artikelRoutes
+app.use('/artikel', articleRoutes); 
 console.log("Artikel routes loaded");
 
-app.use('/gallery', galleryRoutes); // Gallery route
-app.use('/documents', documentRoutes); // Document route
+app.use('/gallery', galleryRoutes);
+console.log("Gallery routes loaded ") 
 
-// Halaman AdminLTE Default
-app.get('/artikel', (req, res) => {
-  const query = 'SELECT * FROM artikel';
-  db.query(query, (err, results) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).send('Error fetching articles');
-    }
-    // Pastikan variabel articles dikirim ke view
-    res.render('artikel/index', { articles: results });
-  });
-});
+app.use('/documents', documentRoutes); 
+console.log("Document routes loaded")
 
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
-  saveUninitialized: true,
+  saveUninitialized: false,
 }));
 
-// app.get('/captcha', (req, res) => {
-//   const captchaText = captcha({ length: 5, size: 60 });
-//   req.session.captcha = captchaText.text;
-//   res.set('Content-Type', 'image/svg+xml');
-//   res.send(captchaText.data);
-// });
+const captchaLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 menit
+  max: 10, // Maks 10 permintaan per menit
+  message: { message: 'Terlalu banyak permintaan CAPTCHA, coba lagi nanti.' },
+});
+app.get('/captcha',captchaLimiter, (req, res) => {
+  const captcha = svgCaptcha.create({
+    size: 9, // Panjang teks CAPTCHA
+    ignoreChars: '0o1i', // Menghindari karakter sulit dibaca
+    noise: 5, // Tingkat noise di CAPTCHA
+    color: true,
+  });
+
+  req.session.captcha = captcha.text; // Simpan teks CAPTCHA di session
+  res.set('Content-Type', 'image/svg+xml');
+  res.send(captcha.data); // Kirim SVG CAPTCHA ke client
+});
 
 app.use('/admin', adminRoutes);
+console.log("Admin routes loaded")
 // Port dan server
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
