@@ -1,4 +1,4 @@
-const Document = require('../models/Document');
+const Document = require('../models/Documents');
 
 // Create a new document
 exports.create = async (req, res) => {

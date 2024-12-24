@@ -18,10 +18,7 @@ dotenv.config();
 // Inisialisasi express
 const app = express();
 app.use(expressLayouts);
-// Set EJS sebagai templating engine
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views')); // Pastikan folder views ada
-app.set('layout', 'layout');
+
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());

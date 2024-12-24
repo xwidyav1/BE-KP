@@ -3,9 +3,9 @@ const Article = require('../models/Artikel');
 // Create a new article
 exports.create = async (req, res) => {
     try {
-        const { title, content } = req.body;
+        const { title, content, category } = req.body;
         const image = req.file ? req.file.path : '';
-        await Article.create({ title, content, image });
+        await Article.create({ title, content, image, category });
         res.redirect('/articles'); // Redirect to the list of articles after creation
     } catch (err) {
         console.error(err);
@@ -51,9 +51,9 @@ exports.getByIdForEdit = async (req, res) => {
 exports.update = async (req, res) => {
     try {
         const { id } = req.params;
-        const { title, content } = req.body;
+        const { title, content, category } = req.body;
         const image = req.file ? req.file.path : undefined;
-        await Article.update(id, { title, content, image });
+        await Article.update(id, { title, content, image, category });
         res.redirect('/articles'); // Redirect to the list of articles after update
     } catch (err) {
         console.error(err);

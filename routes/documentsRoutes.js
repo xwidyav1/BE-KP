@@ -5,7 +5,7 @@ const documentController = require('../controllers/documentController');
 const router = express.Router();
 
 // Multer setup for file uploads
-const upload = multer({ dest: 'uploads/' });
+const upload = require('../middleware/uploadMiddleware');
 
 // Routes for documents
 router.get('/', documentController.getAll); // View all documents

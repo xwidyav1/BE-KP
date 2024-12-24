@@ -5,7 +5,7 @@ const articleController = require('../controllers/artikelController');
 const router = express.Router();
 
 // Multer setup for image uploads
-const upload = multer({ dest: 'uploads/' });
+const upload = require('../middleware/uploadMiddleware');
 
 // Routes for articles
 router.get('/', articleController.getAll); // View all articles
