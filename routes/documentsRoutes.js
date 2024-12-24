@@ -1,20 +1,22 @@
 const express = require('express');
-const router = express.Router();
+const multer = require('multer');
 const documentController = require('../controllers/documentController');
 
-// Rute untuk menambahkan dokumen baru
-router.post('/', documentController.create);
+const router = express.Router();
 
-// Rute untuk mendapatkan semua dokumen
-router.get('/', documentController.getAll);
+// Multer setup for file uploads
+const upload = multer({ dest: 'uploads/' });
 
-// Rute untuk mendapatkan dokumen berdasarkan ID
-router.get('/:id', documentController.getById);
+// Routes for documents
+router.get('/', documentController.getAll); // View all documents
+router.get('/create', (req, res) => {
+    console.log("Route /documents/create hit");
+    res.render('documents/create');
+});
 
-// Rute untuk memperbarui dokumen
-router.put('/:id', documentController.update);
-
-// Rute untuk menghapus dokumen
-router.delete('/:id', documentController.delete);
+router.post('/', upload.single('file'), documentController.create); // Create document
+router.get('/edit/:id', documentController.getByIdForEdit); // Form to edit a document
+router.post('/:id?_method=PUT', upload.single('file'), documentController.update); // Update document
+router.post('/:id?_method=DELETE', documentController.delete); // Delete document
 
 module.exports = router;
